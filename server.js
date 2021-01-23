@@ -14,9 +14,13 @@ io.on('connection', (socket) => {
         console.log('boom recieved from ', socket.id)
     })
 
-    setInterval(() => {
-        socket.emit('whizz')
-    }, 2000)
+    // setInterval(() => {
+    //     socket.emit('whizz')
+    // }, 2000)
+
+    socket.on('msg_send', (data) => {
+        io.emit('msg_recvd', data)
+    })
 })
 
 app.use('/', express.static(__dirname + '/public'))
