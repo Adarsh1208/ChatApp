@@ -28,6 +28,8 @@ $('#sendMsg').click(() => {
 })
 
 socket.on('msgRcvd', (data) => {
-    $('#chatMsg').append($('<li>').text(data.msg))
+    $('#chatMsg').append($('<li>').text(
+        `[${data.from}] : ${data.msg}`
+    ))
 })
 
