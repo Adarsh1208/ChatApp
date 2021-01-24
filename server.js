@@ -7,19 +7,35 @@ const server = http.createServer(app)
 
 const io = socketio(server)
 
+let users = {
+    'adarsh': '12345'
+}
+
 io.on('connection', (socket) => {
     console.log('Connected with Socket id : ', socket.id)
 
-    socket.on('boom', () => {
-        console.log('boom recieved from ', socket.id)
+    socket.on('userLogin', data => {
+        if (users[data.username]) {
+            if (users[data.username] == data.password) {
+                socket.join(data.username)
+                socket.emit('loggedIn')
+            } else {
+                socket.emit('logInFail', data)
+            }
+        } else {
+            users[data.username] = data.password
+            socket.join(data.username)
+            socket.emit('loggedIn')
+        }
+        console.log(users)
     })
 
-    // setInterval(() => {
-    //     socket.emit('whizz')
-    // }, 2000)
-
-    socket.on('msg_send', (data) => {
-        io.emit('msg_recvd', data)
+    socket.on('msgSend', data => {
+        if (data.to) {
+            io.to(data.to).emit('msgRcvd', data)
+        } else {
+            socket.broadcast.emit('msgRcvd', data)
+        }
     })
 })
 

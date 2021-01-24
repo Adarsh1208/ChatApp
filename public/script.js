@@ -1,18 +1,33 @@
 let socket = io()
 
-let inpMsg = document.getElementById('inpMsg')
-let sentBtn = document.getElementById('msgSend')
-let msgList = document.getElementById('msgList')
+//when the page loads
+$('#login').show()
+$('#chat').hide()
 
-sentBtn.onclick = function () {
-    socket.emit('msg_send', {
-        msg: inpMsg.value
+$('#loginBtn').click(() => {
+    socket.emit('userLogin', {
+        username: $('#userName').val(),
+        password: $('#password').val()
     })
-    inpMsg.value
-}
-
-socket.on('msg_recvd', (data) => {
-    let li = document.createElement('li')
-    li.innerText = data.msg
-    msgList.appendChild(li)
 })
+
+socket.on('loggedIn', () => {
+    $('#login').hide()
+    $('#chat').show()
+})
+
+socket.on('logInFail', () => {
+    window.alert('Username or Password Wrong')
+})
+
+$('#sendMsg').click(() => {
+    socket.emit('msgSend', {
+        to: $('#sendMsgTo').val(),
+        msg: $('#userMsg').val()
+    })
+})
+
+socket.on('msgRcvd', (data) => {
+    $('#chatMsg').append($('<li>').text(data.msg))
+})
+
